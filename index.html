@@ -222,8 +222,10 @@
 </div>
 
 <script>
+    // Initialize Stripe (Handles payment screens later)
     const stripe = Stripe('pk_test_replace_with_your_stripe_publishable_key'); 
 
+    // Getting our fields from the screen layout above
     const processBtn = document.getElementById('processBtn');
     const videoUrlInput = document.getElementById('videoUrl');
     const clipCountSelect = document.getElementById('clipCount');
@@ -234,6 +236,7 @@
 
     let isPremiumUser = false; 
 
+    // This function automatically unlocks PRO toggles when a subscription is paid
     function toggleUserTier(premium) {
         isPremiumUser = premium;
         if (premium) {
@@ -252,6 +255,7 @@
         }
     }
 
+    // BUTTON 1: What happens when they click "Extract Shorts"
     processBtn.addEventListener('click', async () => {
         const targetUrl = videoUrlInput.value;
         if (!targetUrl) {
@@ -263,7 +267,8 @@
         processBtn.disabled = true;
 
         try {
-            const response = await fetch('http://localhost:10000/process-clips', {
+            // Sends the video link directly to your Render Python engine to crop
+            const response = await fetch('https://onrender.com', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -278,12 +283,3 @@
             processBtn.disabled = false;
 
             if (result.success) {
-                alert("Success! Your 9:16 clips are ready for processing.");
-            } else {
-                alert("Error from server: " + result.message);
-            }
-        } catch (error) {
-            processBtn.innerText = "Extract Shorts";
-            processBtn.disabled = false;
-
-            
